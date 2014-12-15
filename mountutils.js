@@ -59,7 +59,7 @@ exports.isMounted = function(path, isDevice) {
  *   fstype: filesystem type, otherwise autodetected
  *   readonly: mount device read only
  *   fsopts: mount options to be passed to mount
- *   mount: path to mount binary
+ *   mountPath: path to mount binary
  *   sudoPath: path to sudo binary
  *   noSudo: do not use sudo when calling binaries (default use)
  *   createDir: create path if it doesn't exist (default not)
@@ -68,6 +68,13 @@ exports.isMounted = function(path, isDevice) {
  */
 
 exports.mount = function(dev, path, options, callback) {
+  // See if there is already something mounted at the path
+  var mountInfo = this.isMounted(path,false);
+  if (mountInfo.mounted) {
+    callback({"error": "Something is already mounted on " + path});
+    return;
+  }
+
   // See if the mountpoint exists.  If not, do we create?
   if (!fs.existsSync(path)) {
     if (options.createDir) {
@@ -90,7 +97,7 @@ exports.mount = function(dev, path, options, callback) {
   // Build the command line
   var cmd = (options.noSudo?"":
       (options.sudoPath?options.sudoPath:"/usr/bin/sudo")+" ") + 
-      (options.mount?options.mount:"/bin/mount") + " " +
+      (options.mountPath?options.mountPath:"/bin/mount") + " " +
       (options.readonly?"-r ":"") + 
       (options.fstype?"-t " + options.fstype + " ":"") +
       (options.fsopts?"-o " + options.fsopts + " ":"") +
@@ -116,7 +123,7 @@ exports.mount = function(dev, path, options, callback) {
  * @param options object  options (see below)
  * @param callback function called when umount completes
  *
- *   umount: path to umount binary
+ *   umountPath: path to umount binary
  *   sudoPath: path to sudo binary
  *   noSudo: do not use sudo when calling binaries (default use)
  *   removeDir: remove mountpoint after umount (default no)
@@ -134,7 +141,7 @@ exports.umount = function(path, isDevice, options, callback) {
   // Build the command line
   var cmd = (options.noSudo?"":
       (options.sudoPath?options.sudoPath:"/usr/bin/sudo")+" ") + 
-      (options.mount?options.mount:"/bin/umount") + " " + path;
+      (options.umountPath?options.umountPath:"/bin/umount") + " " + path;
 
   // Let's do it!
   console.log("about to:" + cmd);
