@@ -1,0 +1,17 @@
+{
+  "name": "linux-mountutils",
+  "version": "1.0.0",
+  "description": "Utilities for mounting/unmounting drives in Linux",
+  "main": "mountutils.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "linux",
+    "disk",
+    "mount",
+    "umount"
+  ],
+  "author": "Matt White <m.w.white@gmail.com>",
+  "license": "MIT"
+}
