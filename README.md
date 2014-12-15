@@ -8,8 +8,8 @@ Usage
 
     var mountutil = require('linux-mountutils');
 
-ret = isMounted(path, isDevice)
--------------------------------
+isMounted(path, isDevice)
+-------------------------
 
 isMounted checks to see if a specific mount exists, either by mountpoint
 or device.  It takes 2 arguments:
