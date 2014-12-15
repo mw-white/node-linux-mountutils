@@ -104,7 +104,6 @@ exports.mount = function(dev, path, options, callback) {
       dev + " " + path;
 
   // Let's do it!
-  console.log("about to:" + cmd);
   var mountProc = exec(cmd, function(error, stdout, stderr) {
     if (error !== null) {
       callback({ "error": "exec error " + error });
@@ -144,7 +143,6 @@ exports.umount = function(path, isDevice, options, callback) {
       (options.umountPath?options.umountPath:"/bin/umount") + " " + path;
 
   // Let's do it!
-  console.log("about to:" + cmd);
   var umountProc = exec(cmd, function(error, stdout, stderr) {
     if (error !== null) {
       callback({ "error": "exec error " + error });
