@@ -6,6 +6,29 @@ var exec = require('child_process').exec;
  *
  */
 
+
+/**
+ * quotePath
+ *
+ * Properly single-quote a path so it can be safely used in a shell exec().
+ * Shell quoting rules requires this to be done by:
+ * splitting on any single quotes, wrapping each piece in single quotes
+ * and joining the pieces with escaped single quotes.
+ *
+ * @param path      string  The device or filesystem path to quote
+ *
+ */
+exports.quotePath = function(path) {
+  var pieces = path.split("'");
+  var output = '';
+  var n = pieces.length;
+  for (var i=0; i<n; i++) {
+    output = output + "'" + pieces[i] + "'";
+    if (i< (n-1)) output = output + "\\'";
+  }
+  return output;
+}
+
 /**
  * isMounted
  *
@@ -94,6 +117,8 @@ exports.mount = function(dev, path, options, callback) {
     return;
   }
 
+  var qdev = this.quotePath(dev);
+  var qpath = this.quotePath(path);
   // Build the command line
   var cmd = (options.noSudo?"":
       (options.sudoPath?options.sudoPath:"/usr/bin/sudo")+" ") + 
@@ -101,7 +126,7 @@ exports.mount = function(dev, path, options, callback) {
       (options.readonly?"-r ":"") + 
       (options.fstype?"-t " + options.fstype + " ":"") +
       (options.fsopts?"-o " + options.fsopts + " ":"") +
-      dev + " " + path;
+      qdev + " " + qpath;
 
   // Let's do it!
   var mountProc = exec(cmd, function(error, stdout, stderr) {
@@ -137,10 +162,11 @@ exports.umount = function(path, isDevice, options, callback) {
     return;
   }
 
+  var qpath = this.quotePath(path);
   // Build the command line
   var cmd = (options.noSudo?"":
       (options.sudoPath?options.sudoPath:"/usr/bin/sudo")+" ") + 
-      (options.umountPath?options.umountPath:"/bin/umount") + " " + path;
+      (options.umountPath?options.umountPath:"/bin/umount") + " " + qpath;
 
   // Let's do it!
   var umountProc = exec(cmd, function(error, stdout, stderr) {
